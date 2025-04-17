@@ -1,6 +1,7 @@
 from __future__ import annotations
 import pandas as pd
 import yfinance as yf
+from datetime import datetime, timedelta
 
 """
 example: 
@@ -43,10 +44,30 @@ def get_data(
     temp_df["ticker"] = ticker
     return temp_df.to_dict(orient='records')
 
+#print(get_data('CL=F',START_DATE,END_DATE,TIME_INTERVAL))
+
 # 获取Ticker的信息
 def get_ticker_info(ticker: str) -> dict:
     ticker = yf.Ticker(ticker=ticker)
     return ticker.get_info()
+
+print()
+#print(get_ticker_info(ticker='CL=F'))
+
+# 返回期货最近7天的数据和一周的变化率
+def get_futures(future_ticker: str) -> tuple[dict,dict]:
+    info = get_ticker_info(future_ticker)
+    if info['typeDisp'] == 'Futures':
+        end_date = datetime.today().strftime('%Y-%m-%d')
+        start_date = (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
+        future_7days_data = get_data(future_ticker,start_date,end_date,TIME_INTERVAL)
+        weekly_change = future_7days_data[-1]['Close']/future_7days_data[0]['Open'] - 1
+        return future_7days_data, weekly_change
+    
+    return dict(),dict() 
+
+print(get_futures('CL=F'))
+
 
 # 获取Ticker代码的类型
 def get_ticker_type(ticker: str) -> str:
@@ -107,5 +128,3 @@ def get_competitors_company_MutualFund(ticker:str) -> dict:
     """
     sector = get_competitors_company(ticker)
     return sector.top_mutual_funds
-
-print(get_data('KC=F',start_date=START_DATE,end_date=END_DATE,time_interval=TIME_INTERVAL))
