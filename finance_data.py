@@ -66,7 +66,7 @@ def get_futures(future_ticker: str) -> tuple[dict,dict]:
     
     return dict(),dict() 
 
-print(get_futures('CL=F'))
+# print(get_futures('CL=F'))
 
 
 # 获取Ticker代码的类型
