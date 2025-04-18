@@ -139,7 +139,7 @@ async def competitors_mutualfunds(ticker: str):
         raise HTTPException(status_code=404, detail="No mutual fund data for this ticker/sector")
     return mfs
 
-@app.get("/futures/{ticker}/weekly")
+@app.get("/futures/{ticker}")
 async def futures_weekly(ticker: str):
     """
     For a futures ticker, return last 7 days of data and percent change.
