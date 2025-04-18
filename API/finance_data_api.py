@@ -139,17 +139,19 @@ async def competitors_mutualfunds(ticker: str):
         raise HTTPException(status_code=404, detail="No mutual fund data for this ticker/sector")
     return mfs
 
-@app.get("/futures/{ticker}/weekly")
-async def futures_weekly(ticker: str):
+@app.get("/futures/weekly")
+async def get_futures_weekly(ticker: str):
     """
-    For a futures ticker, return last 7 days of data and percent change.
+    FastAPI route to get the last 7 days of futures data and weekly change.
+    - The `ticker` is passed as a query parameter.
     """
-    try:
-        data, change = fd.get_futures(ticker)
-        if not data:
-            raise HTTPException(status_code=404, detail="Ticker is not a futures contract")
-        return {"ticker": ticker, "last_7_days": data, "weekly_change": change}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    future_7days_data, weekly_change = fd.get_futures(ticker)
+    
+    if not future_7days_data:
+        raise HTTPException(status_code=404, detail="Futures data not found")
+    
+    return {
+        "ticker": ticker,
+        "data": future_7days_data,
+        "weekly_change": weekly_change
+    }
