@@ -55,16 +55,27 @@ print()
 #print(get_ticker_info(ticker='CL=F'))
 
 # 返回期货最近7天的数据和一周的变化率
-def get_futures(future_ticker: str) -> tuple[dict,dict]:
-    info = get_ticker_info(future_ticker)
-    if info['typeDisp'] == 'Futures':
+# Function to get Futures data for the last 7 days and weekly change
+def get_futures(future_ticker: str) -> tuple[dict, dict]:
+    """
+    Fetch the last 7 days of futures data and weekly change percentage.
+    """
+    try:
         end_date = datetime.today().strftime('%Y-%m-%d')
         start_date = (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
-        future_7days_data = get_data(future_ticker,start_date,end_date,TIME_INTERVAL)
-        weekly_change = future_7days_data[-1]['Close']/future_7days_data[0]['Open'] - 1
+        
+        future_7days_data = get_data(future_ticker, start_date, end_date, TIME_INTERVAL)
+
+        if len(future_7days_data) > 1:
+            weekly_change = (future_7days_data[-1]['Close'] / future_7days_data[0]['Open']) - 1
+        else:
+            weekly_change = 0
+
         return future_7days_data, weekly_change
     
-    return dict(),dict() 
+    except Exception as e:
+        print(f"Error fetching data for {future_ticker}: {e}")
+        return dict(), dict()
 
 # print(get_futures('CL=F'))
 
