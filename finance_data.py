@@ -54,38 +54,17 @@ def get_ticker_info(ticker: str) -> dict:
 print()
 #print(get_ticker_info(ticker='CL=F'))
 
-from fastapi import FastAPI, HTTPException
-from datetime import datetime, timedelta
-import yfinance as yf
-
-app = FastAPI()
-
-TIME_INTERVAL = "1d"  # Assuming daily data, adjust as needed
-
-# Function to get Futures data for the last 7 days and weekly change
-def get_futures(future_ticker: str) -> tuple[dict, dict]:
-    """
-    Fetch the last 7 days of futures data and weekly change percentage.
-    """
-    # Get data for the ticker
-    try:
+# 返回期货最近7天的数据和一周的变化率
+def get_futures(future_ticker: str) -> tuple[dict,dict]:
+    info = get_ticker_info(future_ticker)
+    if info['typeDisp'] == 'Futures':
         end_date = datetime.today().strftime('%Y-%m-%d')
         start_date = (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
-        
-        # Fetch the last 7 days of data
-        future_7days_data = get_data(future_ticker, start_date, end_date, TIME_INTERVAL)
-
-        # Calculate weekly change based on the first and last day
-        if len(future_7days_data) > 1:
-            weekly_change = (future_7days_data[-1]['Close'] / future_7days_data[0]['Open']) - 1
-        else:
-            weekly_change = 0
-
+        future_7days_data = get_data(future_ticker,start_date,end_date,TIME_INTERVAL)
+        weekly_change = future_7days_data[-1]['Close']/future_7days_data[0]['Open'] - 1
         return future_7days_data, weekly_change
     
-    except Exception as e:
-        print(f"Error fetching data for {future_ticker}: {e}")
-        return dict(), dict()
+    return dict(),dict() 
 
 # print(get_futures('CL=F'))
 
