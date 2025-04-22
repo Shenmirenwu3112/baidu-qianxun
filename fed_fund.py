@@ -80,13 +80,12 @@ def get_historical_FederalFundsRate_changes() -> str:
         records = df_changes.to_dict(orient='records')
         # only keep last 5
         last5 = records[-5:]
-
         # format to text
         formatted = "\n".join(
             f"{r['date'].strftime('%Y-%m-%d')}: rate={r['value']:.3f}, change={r['change']:.3f}, event={r['event']}"
             for r in last5
         )
-        return "最新5次美联储利率变动：\n" + formatted
+        return "以下为最新5次更改美联储利率,数据包括日期date,利率rate,更改change,更改事件event:\n" + formatted
 
     raise ValueError("Failed to fetch Fed Funds rate data")
 

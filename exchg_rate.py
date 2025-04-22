@@ -25,10 +25,6 @@ def get_fx_summary(ticker: str = 'USDCNY=X') -> str:
     data_1m       = fx.history(start=one_month_ago)
     month_high    = data_1m['High'].max()
     month_low     = data_1m['Low'].min()
-
-    base, quote = ticker.split('=')[0], ticker.split('=')[1]
-    return (
-        f"从{base}兑换{quote}的最新汇率为{latest_price}, 更新时间{latest_timestamp}; "
-        f"1周波动 {round(week_low,4)}~{round(week_high,4)}; "
-        f"1月波动 {round(month_low,4)}~{round(month_high,4)}"
-    )
+    text=f"从{ticker[:3]}兑换{ticker[3:6]}的最新汇率为{latest_price},其更新时间为{latest_timestamp},1周的波动范围为{round(week_low, 4)}~{round(week_high, 4)},1个月的波动范围为{round(month_low, 4)}~{round(month_high, 4)}"
+    # base, quote = ticker.split('=')[0], ticker.split('=')[1]
+    return text
