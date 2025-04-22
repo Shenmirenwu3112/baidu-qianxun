@@ -1,5 +1,6 @@
 # api.py
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import PlainTextResponse
 from typing import Optional
 
 import sys
@@ -9,6 +10,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import finance_data as fd
+import fed_fund 
+import exchg_rate as er
 print(1)
 app = FastAPI(
     title="Finance Data API",
@@ -155,3 +158,37 @@ async def get_futures_weekly(ticker: str):
         "data": future_7days_data,
         "weekly_change": weekly_change
     }
+
+@app.get(
+    "/fed-funds/changes",
+    response_class=PlainTextResponse,
+    summary="最新五次美联储加息/降息事件",
+    description="返回最近5次美联储基准利率变动的日期、利率、改变量及事件（加息/降息）"
+)
+async def fed_funds_rate_changes():
+    try:
+        text = fed_fund.get_historical_FederalFundsRate_changes()
+        return text
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get(
+    "/fx/summary",
+    response_class=PlainTextResponse,
+    summary="外汇汇率摘要",
+    description="返回指定货币对的最新汇率及最近 1 周、1 个月的波动区间"
+)
+async def fx_summary(
+    ticker: str = Query(
+        "USDCNY=X",
+        description="货币对代码，如 USDCNY=X（美元兑人民币）"
+    )
+):
+    """
+    查询某货币对（如 USDCNY=X）的最新汇率和波动区间
+    """
+    try:
+        text = er.get_fx_summary(ticker)
+        return text
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
