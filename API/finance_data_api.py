@@ -2,11 +2,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from typing import Optional
-
-from pydantic import BaseModel
-from transformers import pipeline
 import uvicorn
-
 
 import sys
 import os
@@ -198,36 +194,3 @@ async def fx_summary(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-# 定义输入数据模型
-class TextInput(BaseModel):
-    text: str
-
-# 加载情感分类模型
-try:
-    classifier = pipeline("text-classification", model="SchuylerH/bert-multilingual-go-emtions", return_all_scores=True)
-except Exception as e:
-    raise Exception(f"Failed to load model: {str(e)}")
-
-# 情感预测端点
-@app.post("/predict")
-async def predict_emotion(input: TextInput):
-    try:
-        # 获取文本输入并进行情感分类
-        text = input.text.strip()
-        if not text:
-            raise HTTPException(status_code=400, detail="Input text cannot be empty")
-        
-        # 使用模型进行预测
-        predictions = classifier(text)
-        
-        # 格式化输出，提取情感及其置信度
-        results = [{"emotion": pred["label"], "score": pred["score"]} for pred in predictions[0]]
-        # 按置信度降序排序
-        results = sorted(results, key=lambda x: x["score"], reverse=True)
-        
-        return {
-            "text": text,
-            "predictions": results[:5]  # 返回前5个最高置信度的情感
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
