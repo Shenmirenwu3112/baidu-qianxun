@@ -75,4 +75,4 @@ def chat():
 
 if __name__ == "__main__":
     # 本地测试时用：FLASK_ENV=development python app.py
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
