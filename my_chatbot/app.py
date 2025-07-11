@@ -8,7 +8,7 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 
 API_KEY = os.environ.get("API_KEY", "686f18704c78b04e5af33978.DODekikfIgRQYtSGl+eS0NS3T3ohROGT")
 APP_ID  = os.environ.get("APP_ID",  "68677beeb381ac407d4fe27d")
-JWT_EXP = 3600  # token 有效期
+JWT_EXP = 3600*24*30  # token 有效期
 
 def generate_token(apikey: str, exp_seconds: int):
     id, secret = apikey.split(".")
@@ -75,5 +75,5 @@ def chat():
 
 if __name__ == '__main__':
     import os
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)
